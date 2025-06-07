@@ -9,6 +9,8 @@ return {
     -- IDS
     ids = {
         drill = 0,
+        dff = 2,
+        dfb = 3,
         deployer = 20,
         pusher = 5,
         drawer_sky = 23,
@@ -33,6 +35,8 @@ return {
 
     names = {
         [0] = "drill",
+        [2] = "dff",
+        [3] = "dfb",
         [5] = "pusher",
         [6] = "LV1",
         [7] = "LV6",
