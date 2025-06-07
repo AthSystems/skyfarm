@@ -86,8 +86,8 @@ return {
       deploy = "deploy",
       deploy_done = "RD",
 
-      drill_frontward = "frontward",
-      drill_backward = "backward",
+      forward = "frontward",
+      backward = "backward",
       drill_full_front = "DFF",
       drill_full_back = "DFB",
 
