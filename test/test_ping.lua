@@ -18,14 +18,21 @@ if not rednet.isOpen() then
 end
 
 -- === Ping All Nodes ===
+local success = 0
+local failed = 0
+local total = #config.ids
+
 for name, id in pairs(config.ids) do
     logging.info("Pinging [" .. name .. "] with ID " .. id)
     local ok = network.ping(id, 3)
     if ok then
         logging.info("Node [" .. name .. "] responded.")
+        success = success + 1
     else
         logging.warn("Node [" .. name .. "] did not respond.")
+        failed = failed +1
     end
+    logging.info("Success: " .. tostring(success) .. " | Failed: " .. tostring(failed) .. " | Total:"  .. tostring(total) )
 end
 
 logging.prompt("All ping requests completed.")
