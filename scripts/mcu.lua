@@ -20,9 +20,9 @@ local kw        = config.keywords
 local thresholds = config.thresholds
 
 -- === State ===
-local drill_state   = true
+local drill_state   = false
 local pusher_lvl    = 1
-local manual_stop   = true
+local manual_stop   = false
 local drawer_stop   = false
 local farm_running  = false
 
@@ -116,7 +116,13 @@ local function farm_cycle()
     deploy()
     sleep(6)
 
-    -- Blind climb to LVL 5
+    while pusher_lvl < 5 do
+        move_block_pusher(1)
+        sleep(0.5)
+        logging.trace("PUSHER ========"..pusher_lvl)
+    end
+
+    --[[-- Blind climb to LVL 5
     local reached_lv5 = false
     while not reached_lv5 do
         local climb_start = os.clock()
@@ -134,7 +140,7 @@ local function farm_cycle()
             network.send(ids.pusher, -1)
             sleep(1.5)
         end
-    end
+    end]]--
 
     logging.info("Reached LVL 5. Beginning drill-assisted ascent.")
     upward_plate_sequence_with_timeout()
