@@ -26,8 +26,21 @@ local function sendAndWait(id, msg, keyword, timeout)
     return waitForReply(keyword, timeout)
 end
 
+local function ping(id, timeout)
+    rednet.send(id, "ping", config.protocols.status)
+    local start = os.clock()
+    while os.clock() - start < timeout do
+        local sender, message, protocol = rednet.receive(config.protocols.reply, timeout)
+        if sender == id and message == "pong" then
+            return true
+        end
+    end
+    return false
+end
+
 return {
     send = send,
     waitForReply = waitForReply,
-    sendAndWait = sendAndWait
+    sendAndWait = sendAndWait,
+    ping = ping
 }
