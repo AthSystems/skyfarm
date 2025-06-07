@@ -13,6 +13,7 @@ return {
         pusher = 5,
         drawer_sky = 23,
         monitor = 24,
+        server = 28,
         lv1 = 6,
         lv2 = 26,
         lv3 = 25,
@@ -27,9 +28,32 @@ return {
         lv12 = 10,
         lv13 = 16,
         lv14 = 11,
-        lv15 = 17
+        lv15 = 17,
     },
 
+    names = {
+        [0] = "drill",
+        [5] = "pusher",
+        [6] = "lv1",
+        [7] = "lv6",
+        [8] = "lv8",
+        [9] = "lv10",
+        [10] = "lv12",
+        [11] = "lv14",
+        [12] = "lv5",
+        [13] = "lv7",
+        [14] = "lv9",
+        [15] = "lv11",
+        [16] = "lv13",
+        [17] = "lv15",
+        [20] = "deployer",
+        [23] = "drawer_sky",
+        [24] = "monitor",
+        [25] = "lv3",
+        [26] = "lv2",
+        [27] = "lv4",
+        [28] = "server"
+    },
 
     protocols = {
         control = "sky-control",

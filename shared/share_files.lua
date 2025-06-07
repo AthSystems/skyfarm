@@ -33,12 +33,21 @@ for _, name in ipairs(moduleNames) do
     end
 end
 
+local config = require("config")
+
 print("[V] Module server ready. Listening on protocol 'sky-share'.")
 while true do
-    local id, msg, protocol = rednet.receive("sky-share")
-    if msg and modules[msg] then
-        rednet.send(id, modules[msg], "sky-share")
-    else
-        rednet.send(id, nil, "sky-share")
+    local id, msg, protocol = rednet.receive()
+
+    if protocol == config.protocols.status then
+        if msg == "ping" then
+            rednet.send(id, "pong", config.protocols.reply)
+        end
+    elseif protocol == config.protocols.share then
+        if msg and modules[msg] then
+            rednet.send(id, modules[msg], config.protocols.share)
+        else
+            rednet.send(id, nil, config.protocols.share)
+        end
     end
 end

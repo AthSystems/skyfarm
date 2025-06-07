@@ -2,47 +2,48 @@
 --- Created by judea.
 --- DateTime: 7/06/2025 8:39 pm
 ---
--- === Shared Module Usage Test ===
--- Assumes all modules are already saved in /modules/
+-- === Load Modules ===
+local config  = require("modules.config")
+local logging = require("modules.logging")
+local network = require("modules.network")
+local utils   = require("modules.utils")
 
--- Add modules folder to package.path if needed
-package.path = "/modules/?.lua;" .. package.path
+-- === Test Logging ===
+print("== Logging Module Test ==")
+logging.info("This is an info log.")
+logging.warn("This is a warning log.")
+logging.error("This is an error log.")
+logging.prompt("This is a prompt output.")
 
--- Require modules
-local config = require("config")
-local logging = require("logging")
-local network = require("network")
-local utils = require("utils")
 
--- Test each module
-print("Testing shared modules...\n")
+-- === Test Network ===
+print("\n== Network Module Test ==")
+local test_id = config.ids.server
+local timeout = 3
 
--- Config test
-print("Config test:")
-if config.node_id and config.node_name then
-    print("[V] Node ID:", config.node_id)
-    print("[V] Node Name:", config.node_name)
+local success = network.ping(test_id, timeout)
+if success then
+    logging.prompt("Ping to ID " .. test_id .. " successful.")
 else
-    print("[X] Config values not found.")
+    logging.prompt("Ping to ID " .. test_id .. " failed.")
 end
 
--- Logging test
-print("\nLogging test:")
-logging.log("This is a test log message from the client.")
-logging.warn("This is a test warning.")
-logging.error("This is a test error.")
 
--- Network test
-print("\nNetwork test:")
-print("Sending 'ping' to self...")
-local ok = network.ping(config.node_id, 1)
-print(ok and "[V] Ping successful." or "[X] Ping failed.")
+-- === Test Utils ===
+local minval = utils.clamp(10,20,60)
+local maxval = utils.clamp(70,20,60)
 
--- Utils test
-print("\nUtils test:")
-print("Sleep for 1s with label:")
-utils.sleep_with_label(1)
+if minval == 20 then
+    logging.prompt("Min clamp : " .. tostring(minval))
+else
+    logging.prompt("Error on minimum clamp")
+end
 
-print("\n[V] All module functions tested.")
+if maxval == 60 then
+    logging.prompt("Max clamp : " .. tostring(maxval))
+else
+    logging.prompt("Error on maximum clamp")
+end
 
 
+print("\n== All Modules Tested ==")

@@ -5,6 +5,7 @@
 ---
 
 local config = require("config")
+local node_name = config.names[os.getComputerID()]
 
 -- Format & print message to local terminal
 local function prompt(msg)
@@ -14,7 +15,7 @@ end
 
 local function send_log(level, sender, msg, data)
     local time = os.date("%H:%M:%S")
-    local label = sender or config.node_name or "unknown"
+    local label = sender or "unknown"
 
     local payload = {
         source = label,
@@ -32,19 +33,20 @@ local function send_log(level, sender, msg, data)
 end
 
 local function log(msg, data)
-    send_log("log", config.node_name, msg, data)
+    send_log("log", node_name, msg, data)
 end
 
 local function warn(msg, data)
-    send_log("warn", config.node_name, msg, data)
+    send_log("warn", node_name, msg, data)
 end
 
 local function error(msg, data)
-    send_log("error", config.node_name, msg, data)
+    send_log("error", node_name, msg, data)
 end
 
 return {
     log = log,
     warn = warn,
-    error = error
+    error = error,
+    prompt = prompt
 }
