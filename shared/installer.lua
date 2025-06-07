@@ -7,21 +7,28 @@ local base_url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shar
 
 -- === Files to Download ===
 local files = {
-    "fetch_modules.lua",
-    "update_modules.lua"
+    {
+        name = "fetch_modules.lua",
+        url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/"
+    },
+    {
+        name = "test_modules.lua",
+        url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/test/"
+    }
 }
 
 -- === Download Files ===
-for _, file in ipairs(files) do
-    local response = http.get(base_url .. file)
+for i, file in ipairs(files) do
+
+    local response = http.get(file[i].url .. file[i].name)
     if response then
-        local handle = fs.open(file, "w")
+        local handle = fs.open(file[i].name, "w")
         handle.write(response.readAll())
         handle.close()
         response.close()
-        print("[V] Downloaded: " .. file)
+        print("[V] Downloaded: " .. file[i].name)
     else
-        print("[X] Failed to download: " .. file)
+        print("[X] Failed to download: " .. file[i].name)
     end
 end
 
@@ -35,19 +42,8 @@ local modules = {
     "utils.lua"
 }
 
-local allExist = true
-for _, m in ipairs(modules) do
-    if not fs.exists("shared/" .. m) then
-        allExist = false
-        break
-    end
-end
-
-if allExist then
-    shell.run("update_modules.lua")
-else
-    shell.run("fetch_modules.lua")
-end
+shell.run("fetch_modules.lua")
+shell.run("test_modules.lua")
 ]]
 
 -- Save startup file at root

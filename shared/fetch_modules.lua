@@ -1,5 +1,4 @@
 --- Shared Bootstrap
---- Download required scripts for Skyfarm project
 --- Created by judea.
 --- DateTime: 7/06/2025 4:51 pm
 ---
@@ -30,12 +29,8 @@ end
 
 local function fetchAllModules()
     for _, mod in ipairs(required_modules) do
-        if not fs.exists(mod .. ".lua") then
-            print("Fetching module:", mod)
-            fetchModule(mod)
-        else
-            print("Module already present:", mod)
-        end
+       print("Fetching module:", mod)
+       fetchModule(mod)
     end
 end
 
