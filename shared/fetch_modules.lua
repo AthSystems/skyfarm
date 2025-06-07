@@ -14,10 +14,18 @@ local function openModem()
     rednet.open(peripheral.getName(modem))
 end
 
+local function ensureModulesDir()
+    if not fs.exists("/modules") then
+        fs.makeDir("/modules")
+    end
+end
+
+
 local function fetchModule(name)
     rednet.send(shared_server_id, name, protocol)
     local id, data = rednet.receive(protocol, 2)
     if data then
+        ensureModulesDir()
         local file = fs.open(name .. ".lua", "w")
         file.write(data)
         file.close()
