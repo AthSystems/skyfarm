@@ -38,11 +38,12 @@ while true do
             rednet.send(id, config.keywords.pong, config.protocols.reply)
         end
     elseif protocol == config.protocols.share then
-        logging.prompt("Receive share request from " .. config.names[id])
         if msg and modules[msg] then
             rednet.send(id, modules[msg], config.protocols.share)
+            logging.prompt("Receive share request from " .. config.names[id] .. ". Sent " .. msg .. "module.")
         else
             rednet.send(id, nil, config.protocols.share)
+            logging.prompt("Receive share request from " .. config.names[id] .. ". Module " .. msg .. "failed.")
         end
     end
 end
