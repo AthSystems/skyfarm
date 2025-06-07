@@ -1,0 +1,33 @@
+--- Skyfarm Network
+--- Created by judea.
+--- DateTime: 7/06/2025 4:43 pm
+---
+
+local config = require("config")
+
+local function send(id, msg)
+    rednet.send(id, msg, config.protocols.control)
+end
+
+local function waitForReply(keyword, timeout)
+    local start = os.clock()
+    repeat
+        local _, msg = rednet.receive(timeout)
+        if msg and msg:find(keyword) then
+            local lvl = tonumber(string.match(msg, "LVL ?(%d+)"))
+            return msg, lvl
+        end
+    until os.clock() - start > timeout
+    return nil, nil
+end
+
+local function sendAndWait(id, msg, keyword, timeout)
+    send(id, msg)
+    return waitForReply(keyword, timeout)
+end
+
+return {
+    send = send,
+    waitForReply = waitForReply,
+    sendAndWait = sendAndWait
+}
