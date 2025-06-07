@@ -5,7 +5,7 @@
 ---
 
 -- === Shared Module Bootstrap ===
-local shared_server_id = 1 -- ID of the module server
+local shared_server_id = 28 -- ID of the module server
 local protocol = "sky-share"
 local required_modules = { "config", "logging", "network", "utils" }
 
