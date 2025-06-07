@@ -22,6 +22,7 @@ for i, file in ipairs(files) do
 
     local response = http.get(base_url .. file.folder .. file.name)
     if response then
+        shell.run("rm "..file.name)
         local handle = fs.open(file.name, "w")
         handle.write(response.readAll())
         handle.close()

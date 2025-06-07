@@ -16,7 +16,7 @@ end
 
 local function ensureModulesDir()
     if not fs.exists("/modules") then
-        fs.mkDir("/modules")
+        fs.makeDir("/modules")
     end
 end
 
