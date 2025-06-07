@@ -56,4 +56,4 @@ end
 
 -- === Start ===
 logging.info(name .. " ready. Watching side: " .. redstone_side)
-parallel.waitForAny(watchRedstone, handlePings)
+parallel.waitForAny(watchRedstone, listening)
