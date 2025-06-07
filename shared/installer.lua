@@ -3,24 +3,24 @@
 --- DateTime: 7/06/2025 4:59 pm
 ---
 -- === GitHub Base URL ===
-local base_url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/"
+local base_url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/"
 
 -- === Files to Download ===
 local files = {
     {
         name = "fetch_modules.lua",
-        url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/"
+        folder = "shared/"
     },
     {
         name = "test_modules.lua",
-        url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/test/"
+        folder = "test/"
     }
 }
 
 -- === Download Files ===
 for i, file in ipairs(files) do
 
-    local response = http.get(file[i].url .. file[i].name)
+    local response = http.get(base_url .. file[i].folder .. file[i].name)
     if response then
         local handle = fs.open(file[i].name, "w")
         handle.write(response.readAll())
