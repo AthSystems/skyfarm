@@ -3,7 +3,7 @@
 --- DateTime: 7/06/2025 4:59 pm
 ---
 -- === GitHub Base URL ===
-local base_url = "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/"
+local base_url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/"
 
 -- === Files to Download ===
 local files = {
