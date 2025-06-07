@@ -115,14 +115,8 @@ local function farm_cycle()
     logging.info("Starting farm cycle.")
     deploy()
     sleep(6)
-
-    while pusher_lvl < 5 do
-        move_block_pusher(1)
-        sleep(0.5)
-        logging.trace("PUSHER ========"..pusher_lvl)
-    end
-
-    --[[-- Blind climb to LVL 5
+    
+    -- Blind climb to LVL 5
     local reached_lv5 = false
     while not reached_lv5 do
         local climb_start = os.clock()
@@ -140,7 +134,7 @@ local function farm_cycle()
             network.send(ids.pusher, -1)
             sleep(1.5)
         end
-    end]]--
+    end
 
     logging.info("Reached LVL 5. Beginning drill-assisted ascent.")
     upward_plate_sequence_with_timeout()
