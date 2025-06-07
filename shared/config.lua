@@ -13,7 +13,7 @@ return {
         dfb = 3,
         deployer = 20,
         pusher = 5,
-        mcu = 1,
+        master = 1,
         drawer_sky = 23,
         monitor = 24,
         server = 28,

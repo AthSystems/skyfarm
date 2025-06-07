@@ -67,7 +67,7 @@ end
 
 -- === Fill Level Check ===
 local function update_drawer_fill_state()
-    network.send(ids.drawer_sky, kw.sky_fill, protocols.fill)
+    network.send(ids.drawer_sky, kw.sky_fill, protocols.control)
     local _, response = rednet.receive(protocols.reply, 2)
     local fill = tonumber(response)
     if fill then
