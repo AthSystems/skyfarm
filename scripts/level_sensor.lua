@@ -13,7 +13,8 @@ local master_id = config.ids.master
 local id = os.getComputerID()
 local name = config.names[id]
 local level = tonumber(string.match(name, "LV?(%d+)")) or 0
-local redstone_side = -(level % 2) + 1 -- 0 = right, 1 = left
+local redstone_side = nil
+    if -(level % 2) + 1 == 0 then redstone_side = "right" else redstone_side = "left" end
 local fb_cmd = config.keywords.plate_moved .. " " .. tostring(level)
 
 
