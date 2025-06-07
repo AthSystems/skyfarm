@@ -12,14 +12,15 @@ local moduleNames = { "config", "logging", "network", "utils" }
 local modules = {}
 
 local function readModule(name)
-    local path = name
+    local path = name .. "lua"
     if fs.exists(path) then
         local f = fs.open(path, "r")
         local content = f.readAll()
         f.close()
+        print("[V] Module found: " .. path)
         return content
     else
-        print("⚠️  Module not found: " .. path)
+        print("[X] Module not found: " .. path)
         return nil
     end
 end
@@ -32,7 +33,7 @@ for _, name in ipairs(moduleNames) do
     end
 end
 
-print("📡 Module server ready. Listening on protocol 'sky-share'.")
+print("[V] Module server ready. Listening on protocol 'sky-share'.")
 while true do
     local id, msg, protocol = rednet.receive("sky-share")
     if msg and modules[msg] then

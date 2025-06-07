@@ -7,7 +7,7 @@ local base_url = "https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shar
 
 -- === Files to Download ===
 local files = {
-    "install_modules.lua",
+    "fetch_modules.lua",
     "update_modules.lua"
 }
 
@@ -19,9 +19,9 @@ for _, file in ipairs(files) do
         handle.write(response.readAll())
         handle.close()
         response.close()
-        print("✅ Downloaded: " .. file)
+        print("[V] Downloaded: " .. file)
     else
-        print("❌ Failed to download: " .. file)
+        print("[X] Failed to download: " .. file)
     end
 end
 
@@ -46,7 +46,7 @@ end
 if allExist then
     shell.run("update_modules.lua")
 else
-    shell.run("install_modules.lua")
+    shell.run("fetch_modules.lua")
 end
 ]]
 
@@ -55,4 +55,4 @@ local startup = fs.open("startup.lua", "w")
 startup.write(startup_code)
 startup.close()
 
-print("🚀 Startup configured to auto-install/update modules.")
+print("Startup configured to auto-install/update modules.")

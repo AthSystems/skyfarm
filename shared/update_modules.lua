@@ -21,15 +21,15 @@ local function updateModule(name)
         local file = fs.open(name .. ".lua", "w")
         file.write(data)
         file.close()
-        print("✅ Updated module:", name)
+        print("[V] Updated module:", name)
     else
-        print("❌ Failed to update module:", name)
+        print("[X] Failed to update module:", name)
     end
 end
 
 local function updateAllModules()
     for _, mod in ipairs(required_modules) do
-        print("🔄 Updating module:", mod)
+        print("Updating module:", mod)
         updateModule(mod)
     end
 end
@@ -37,4 +37,4 @@ end
 -- === Run Update ===
 openModem()
 updateAllModules()
-print("✅ All shared modules updated.")
+print("All shared modules updated.")

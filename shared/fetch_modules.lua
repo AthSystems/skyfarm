@@ -22,19 +22,19 @@ local function fetchModule(name)
         local file = fs.open(name .. ".lua", "w")
         file.write(data)
         file.close()
-        print("✅ Module downloaded:", name)
+        print("[V] Module downloaded:", name)
     else
-        print("❌ Failed to fetch module:", name)
+        print("[X] Failed to fetch module:", name)
     end
 end
 
 local function fetchAllModules()
     for _, mod in ipairs(required_modules) do
         if not fs.exists(mod .. ".lua") then
-            print("📦 Fetching module:", mod)
+            print("Fetching module:", mod)
             fetchModule(mod)
         else
-            print("🟩 Module already present:", mod)
+            print("Module already present:", mod)
         end
     end
 end
@@ -43,6 +43,6 @@ end
 openModem()
 fetchAllModules()
 
-print("✅ All modules fetched.")
-print("🔁 You can now create or run your main.lua program.")
+print("All modules fetched.")
+print("You can now create or run your main.lua program.")
 
