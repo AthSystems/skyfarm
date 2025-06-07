@@ -4,21 +4,35 @@
 --- DateTime: 7/06/2025 4:44 pm
 ---
 
+-- === Shared Module Server ===
 local modem = peripheral.find("modem") or error("No modem found")
 rednet.open(peripheral.getName(modem))
 
-local modules = {
-    config = "config",
-    logging = "logging",
-    network = "network",
-    utils = "utils"
-}
+local moduleNames = { "config", "logging", "network", "utils" }
+local modules = {}
 
-for k, v in pairs(modules) do
-    modules[k] = textutils.unserialize(v) or v
+local function readModule(name)
+    local path = name
+    if fs.exists(path) then
+        local f = fs.open(path, "r")
+        local content = f.readAll()
+        f.close()
+        return content
+    else
+        print("⚠️  Module not found: " .. path)
+        return nil
+    end
 end
 
-print("📡 Module server ready.")
+-- Load all modules into memory
+for _, name in ipairs(moduleNames) do
+    local content = readModule(name)
+    if content then
+        modules[name] = content
+    end
+end
+
+print("📡 Module server ready. Listening on protocol 'sky-share'.")
 while true do
     local id, msg, protocol = rednet.receive("sky-share")
     if msg and modules[msg] then
