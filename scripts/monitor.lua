@@ -1,7 +1,7 @@
 --- Skyfarm Monitor
---- Created by judea.
---- DateTime: 7/06/2025 11:31 pm
----
+--- Updated for structured payload, log level filter, and modular config
+--- DateTime: 7/06/2025
+
 -- === Shared Modules ===
 local config  = require("modules.config")
 local logging = require("modules.logging")
@@ -35,23 +35,6 @@ local level_colors = {
 }
 
 -- === UI Drawing ===
-local function add_log(entry)
-    if entry.level == "trace" and not debug_trace then return end
-    table.insert(log_lines, entry)
-    if #log_lines > log_area_height then
-        table.remove(log_lines, 1)
-    end
-end
-
-local function format_payload(sender, msg)
-    return {
-        time = msg.time or os.date("%H:%M:%S"),
-        sender = config.names[sender] or ("ID " .. tostring(sender)),
-        level = msg.level or "info",
-        msg = msg.message or tostring(msg)
-    }
-end
-
 local function redraw_logs()
     monitor.setBackgroundColor(colors.black)
     monitor.clear()
@@ -77,14 +60,14 @@ local function redraw_logs()
     monitor.setTextColor(colors.white)
     monitor.write(start_stop_label)
 
-    -- Trace (right)
+    -- Trace Toggle (right)
     local trace_label = debug_trace and "[TRACE ✓]" or "[TRACE ×]"
     monitor.setCursorPos(screen_w - #trace_label + 1, screen_h)
     monitor.setBackgroundColor(colors.lightGray)
     monitor.setTextColor(colors.black)
     monitor.write(trace_label)
 
-    -- Clear (left)
+    -- Clear Button (left)
     local clear_label = "[CLEAR]"
     monitor.setCursorPos(1, screen_h)
     monitor.setBackgroundColor(colors.lightGray)
@@ -98,103 +81,109 @@ local function clear_logs()
 end
 
 local function send_control(msg)
-    local master_id = config.ids.master or 1  -- fallback to 1 if not defined
+    local master_id = config.ids.master or 1
     network.send(master_id, msg, config.protocols.control)
 end
 
+-- === Logging Handler ===
+local function add_log(entry)
+    if entry.level == "trace" and not debug_trace then return end
+    table.insert(log_lines, entry)
+    if #log_lines > log_area_height then
+        table.remove(log_lines, 1)
+    end
+end
 
--- === Touch Events ===
+local function format_entry(sender, payload)
+    return {
+        time   = payload.time or os.date("%H:%M:%S"),
+        sender = payload.source or config.names[sender] or ("ID " .. tostring(sender)),
+        level  = payload.level or "info",
+        msg    = payload.message or tostring(payload)
+    }
+end
+
+-- === Event Handlers ===
 local function handle_touch(x, y)
     if y == screen_h then
         local start_stop_label = is_running and "[ STOP ]" or "[ START ]"
         local start_stop_x = math.floor((screen_w - #start_stop_label) / 2) + 1
 
-        -- Check Start/Stop
         if x >= start_stop_x and x < start_stop_x + #start_stop_label then
             is_running = not is_running
             send_control(is_running and config.keywords.start or config.keywords.stop)
             redraw_logs()
-        -- Check TRACE
         elseif x >= screen_w - 9 then
             debug_trace = not debug_trace
             redraw_logs()
-        -- Check CLEAR
         elseif x >= 1 and x <= 7 then
             clear_logs()
         end
     end
 end
 
--- === Rednet Listener ===
-local function handle_logs()
+local function listening()
     while true do
         local sender, msg, proto = rednet.receive()
 
         if proto == config.protocols.logs then
-            if type(msg) == "table" and msg.source and msg.level and msg.time and msg.message then
-                -- Filter based on debug flag
-                if msg.level == "trace" and not show_trace then
-                    -- Skip trace if disabled
-                else
-                    table.insert(log_lines, {
-                        time   = msg.time,
-                        sender = msg.source,
-                        level  = msg.level,
-                        msg    = msg.message
-                    })
-                    if #log_lines > log_area_height then
-                        table.remove(log_lines, 1)
-                    end
-                    redraw_logs()
-                end
+            if type(msg) == "table" and msg.source and msg.message then
+                local entry = format_entry(sender, msg)
+                add_log(entry)
+                redraw_logs()
             elseif type(msg) == "string" then
-                -- Fallback for legacy string logs
-                table.insert(log_lines, {
-                    time   = os.date("%H:%M:%S"),
-                    sender = getName(sender),
-                    level  = "info",
-                    msg    = msg
+                add_log({
+                    time = os.date("%H:%M:%S"),
+                    sender = config.names[sender] or ("ID " .. tostring(sender)),
+                    level = "info",
+                    msg = msg
                 })
-                if #log_lines > log_area_height then
-                    table.remove(log_lines, 1)
-                end
                 redraw_logs()
             end
 
         elseif proto == config.protocols.control then
-            if msg == config.keywords.stop then
-                is_running = false
-                redraw_logs()
-            elseif msg == config.keywords.start then
+            if msg == config.keywords.start then
                 is_running = true
+                redraw_logs()
+            elseif msg == config.keywords.stop then
+                is_running = false
                 redraw_logs()
             end
 
         elseif proto == config.protocols.status then
-            table.insert(log_lines, {
-                time   = os.date("%H:%M:%S"),
-                sender = getName(sender),
-                level  = "info",
-                msg    = msg
-            })
-            if #log_lines > log_area_height then
-                table.remove(log_lines, 1)
+            if msg == config.keywords.ping then
+                rednet.send(sender, config.keywords.pong, config.protocols.reply)
+                add_log({
+                    time = os.date("%H:%M:%S"),
+                    sender = config.names[os.getComputerID()],
+                    level = trace,
+                    msg = "Pong response sent to " .. sender
+                })
+            else
+                add_log({
+                    time = os.date("%H:%M:%S"),
+                    sender = config.names[sender] or ("ID " .. tostring(sender)),
+                    level = "info",
+                    msg = msg
+                })
+                redraw_logs()
             end
-            redraw_logs()
+
+        elseif proto == config.protocols.update then
+            sleep(10)
+            shell.run("fetch_modules.lua")
         end
     end
 end
 
-
 -- === Launch ===
+logging.prompt("Monitor started.")
 parallel.waitForAny(
-    handle_logs,
     function()
         while true do
             local _, _, x, y = os.pullEvent("monitor_touch")
             handle_touch(x, y)
         end
-    end
+    end,
+    listening
 )
-
-logging.prompt("Monitor started.")
