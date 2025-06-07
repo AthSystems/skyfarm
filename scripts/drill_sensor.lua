@@ -19,7 +19,7 @@ if id == 2 then
     feedback_command = config.keywords.drill_full_front
     redstone_side = "right"
 else
-    feedback_command = config.keywords.drill_full_backward
+    feedback_command = config.keywords.drill_full_back
     redstone_side = "left"
 end
 
