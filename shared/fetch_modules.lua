@@ -25,7 +25,6 @@ local function fetchModule(name)
     rednet.send(shared_server_id, name, protocol)
     local id, data = rednet.receive(protocol, 2)
     if data then
-        ensureModulesDir()
         local file = fs.open("/modules/" .. name .. ".lua", "w")
         file.write(data)
         file.close()
@@ -44,6 +43,7 @@ end
 
 -- === Run Bootstrap ===
 openModem()
+ensureModulesDir()
 fetchAllModules()
 
 print("All modules fetched.")
