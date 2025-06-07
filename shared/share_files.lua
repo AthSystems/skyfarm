@@ -15,10 +15,21 @@ local function updateModule(name)
     local path = name .. ".lua"
     shell.run("rm ".. path)
     shell.run("wget https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/" .. path .. " " .. path)
+    if fs.exists(path) then
+            local f = fs.open(path, "r")
+            local content = f.readAll()
+            f.close()
+            return content
+        else
+            print("⚠️  Module not found: " .. path)
+            return nil
+    end
 end
 
 for _, name in ipairs(moduleNames) do
-    updateModule(name)
+    local content  = updateModule(name)
+    if content then
+        modules[name] = content
 end
 
 local config = require("config")
@@ -43,7 +54,7 @@ while true do
             logging.prompt("Receive share request from " .. config.names[id] .. ". Sent " .. msg .. "module.")
         else
             rednet.send(id, nil, config.protocols.share)
-            logging.prompt("Receive share request from " .. config.names[id] .. ". Module " .. msg .. "failed.")
+            logging.prompt("Receive share request from " .. config.names[id] .. ". Module " .. msg .. " failed.")
         end
     end
 end
