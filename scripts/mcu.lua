@@ -191,6 +191,11 @@ for name, id in pairs(ids) do
     end
 end
 
+logging.info("=== Initial State ===")
+logging.info("Manual Stop Flag  : " .. tostring(manual_stop))
+logging.info("Drawer Stop Flag  : " .. tostring(drawer_stop))
+logging.info("Farm Running Flag : " .. tostring(farm_running))
+logging.info("=====================")
 logging.info("Resetting system...")
 reset()
 
