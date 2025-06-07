@@ -30,6 +30,7 @@ for _, name in ipairs(moduleNames) do
     local content  = updateModule(name)
     if content then
         modules[name] = content
+    end
 end
 
 local config = require("config")
@@ -51,7 +52,7 @@ while true do
     elseif protocol == config.protocols.share then
         if msg and modules[msg] then
             rednet.send(id, modules[msg], config.protocols.share)
-            logging.prompt("Receive share request from " .. config.names[id] .. ". Sent " .. msg .. "module.")
+            logging.prompt("Receive share request from " .. config.names[id] .. ". Sent " .. msg .. " module.")
         else
             rednet.send(id, nil, config.protocols.share)
             logging.prompt("Receive share request from " .. config.names[id] .. ". Module " .. msg .. " failed.")

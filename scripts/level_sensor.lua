@@ -3,6 +3,7 @@
 --- DateTime: 7/06/2025 11:11 pm
 ---
 -- === Shared Modules ===
+package.path = package.path .. ";/modules/?.lua"
 local config  = require("modules.config")
 local logging = require("modules.logging")
 local network = require("modules.network")
