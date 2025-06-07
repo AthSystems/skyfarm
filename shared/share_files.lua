@@ -11,10 +11,14 @@ rednet.open(peripheral.getName(modem))
 local moduleNames = { "config", "logging", "network", "utils" }
 local modules = {}
 
-local function readModule(name)
+local function updateModule(name)
     local path = name .. ".lua"
     shell.run("rm ".. path)
     shell.run("wget https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/" .. path .. " " .. path)
+end
+
+for _, name in ipairs(moduleNames) do
+    updateModule(name)
 end
 
 local config = require("config")
