@@ -11,7 +11,7 @@ local network = require("modules.network")
 -- === Per-Node Configuration ===
 local master_id = config.ids.master
 local id = os.getComputerID()
-local node_name = config.names[id]
+local name = config.names[id]
 local feedback_command = nil
 local redstone_side = nil
 
@@ -62,5 +62,5 @@ local function listening()
 end
 
 -- === Start ===
-logging.prompt(node_name .. " ready. Listening on " .. redstone_side)
+logging.prompt(name .. " ready. Listening on " .. redstone_side)
 parallel.waitForAny(watchRedstone, listening)
