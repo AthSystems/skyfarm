@@ -13,24 +13,8 @@ local modules = {}
 
 local function readModule(name)
     local path = name .. ".lua"
-    if fs.exists(path) then
-        local f = fs.open(path, "r")
-        local content = f.readAll()
-        f.close()
-        print("[V] Module found: " .. path)
-        return content
-    else
-        print("[X] Module not found: " .. path)
-        return nil
-    end
-end
-
--- Load all modules into memory
-for _, name in ipairs(moduleNames) do
-    local content = readModule(name)
-    if content then
-        modules[name] = content
-    end
+    shell.run("rm ".. path)
+    shell.run("wget https://github.com/AthSystems/skyfarm/raw/refs/heads/main/shared/" .. path .. " " .. path)
 end
 
 local config = require("config")
