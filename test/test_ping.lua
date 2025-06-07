@@ -32,7 +32,6 @@ for name, id in pairs(config.ids) do
         logging.warn("Node [" .. name .. "] did not respond.")
         failed = failed +1
     end
-    logging.info("Success: " .. tostring(success) .. " | Failed: " .. tostring(failed) .. " | Total:"  .. tostring(total) )
 end
-
+logging.info("Success: " .. tostring(success) .. " | Failed: " .. tostring(failed) .. " | Total:"  .. tostring(total) )
 logging.prompt("All ping requests completed.")
