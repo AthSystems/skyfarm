@@ -13,9 +13,12 @@ local function waitForReply(keyword, timeout)
     local start = os.clock()
     repeat
         local _, msg = rednet.receive(timeout)
-        if msg and msg:find(keyword) then
+        if type(msg) == "string" and msg:find(keyword) then
             local lvl = tonumber(string.match(msg, "LVL ?(%d+)"))
             return msg, lvl
+        elseif type(msg) == "table" and msg.message and type(msg.message) == "string" and msg.message:find(keyword) then
+            local lvl = tonumber(string.match(msg.message, "LVL ?(%d+)"))
+            return msg.message, lvl
         end
     until os.clock() - start > timeout
     return nil, nil
