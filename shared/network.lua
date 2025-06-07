@@ -5,8 +5,8 @@
 
 local config = require("config")
 
-local function send(id, msg)
-    rednet.send(id, msg, config.protocols.control)
+local function send(id, msg, protocol)
+    rednet.send(id, msg, protocol or config.protocols.control)
 end
 
 local function waitForReply(keyword, timeout)
@@ -21,13 +21,13 @@ local function waitForReply(keyword, timeout)
     return nil, nil
 end
 
-local function sendAndWait(id, msg, keyword, timeout)
-    send(id, msg)
+local function sendAndWait(id, msg, keyword, timeout, protocol)
+    send(id, msg, protocol)
     return waitForReply(keyword, timeout)
 end
 
 local function ping(id, timeout)
-    rednet.send(id, "ping", config.protocols.status)
+    send(id, config.keywords.ping, config.protocols.status)
     local start = os.clock()
     while os.clock() - start < timeout do
         local sender, message, protocol = rednet.receive(config.protocols.reply, timeout)

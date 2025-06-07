@@ -1,0 +1,58 @@
+--- Push Level Sensor
+--- Created by judea.
+--- DateTime: 7/06/2025 11:11 pm
+---
+-- === Shared Modules ===
+local config  = require("modules.config")
+local logging = require("modules.logging")
+local network = require("modules.network")
+
+-- === Configuration ===
+local master_id = config.ids.master
+local id = os.getComputerID()
+local name = config.names[id]
+local level = tonumber(string.match(name, "LV?(%d+)")) or 0
+local redstone_side = -(level % 2) + 1 -- 0 = right, 1 = left
+local fb_cmd = config.keywords.plate_moved .. " " .. tostring(level)
+
+
+-- === Derived Constants ===
+
+-- === State ===
+local last_redstone_state = false
+
+-- === Redstone Feedback Handler ===
+local function watchRedstone()
+    while true do
+        os.pullEvent("redstone")
+        local state = redstone.getInput(redstone_side)
+
+        if state and not last_redstone_state then
+            network.send(master_id, fb_cmd, config.protocols.reply)
+            logging.trace(name .. ": Plate at " .. fb_cmd)
+        end
+
+        last_redstone_state = state
+    end
+end
+
+-- Respond to ping messages
+local function listening()
+    while true do
+        local sender, msg, protocol = rednet.receive()
+
+        if protocol == config.protocols.status and msg == config.keywords.ping then
+            rednet.send(sender, config.keywords.pong, config.protocols.reply)
+            logging.trace("Pong response sent to " .. sender)
+
+        -- Module update handling
+        elseif protocol == config.protocols.share and msg == config.keywords.update then
+            sleep(10)
+            shell.run("fetch_modules.lua")
+        end
+    end
+end
+
+-- === Start ===
+logging.info(name .. " ready. Watching side: " .. redstone_side)
+parallel.waitForAny(watchRedstone, handlePings)
