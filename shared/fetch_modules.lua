@@ -26,7 +26,7 @@ local function fetchModule(name)
     local id, data = rednet.receive(protocol, 2)
     if data then
         ensureModulesDir()
-        local file = fs.open(name .. ".lua", "w")
+        local file = fs.open("/modules/" .. name .. ".lua", "w")
         file.write(data)
         file.close()
         print("[V] Module downloaded:", name)
