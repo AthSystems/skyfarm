@@ -32,8 +32,8 @@ local function send_log(level, sender, msg, data)
     rednet.broadcast(payload, config.protocols.logs)
 end
 
-local function log(msg, data)
-    send_log("log", node_name, msg, data)
+local function info(msg, data)
+    send_log("info", node_name, msg, data)
 end
 
 local function warn(msg, data)
