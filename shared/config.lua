@@ -13,6 +13,7 @@ return {
         dfb = 3,
         deployer = 20,
         pusher = 5,
+        mcu = 1,
         drawer_sky = 23,
         monitor = 24,
         server = 28,
@@ -34,10 +35,11 @@ return {
     },
 
     names = {
-        [0] = "drill",
-        [2] = "dff",
-        [3] = "dfb",
-        [5] = "pusher",
+        [0] = "Drill",
+        [1] = "MCU",
+        [2] = "DFF",
+        [3] = "DFB",
+        [5] = "Pusher",
         [6] = "LV1",
         [7] = "LV6",
         [8] = "LV8",
@@ -50,13 +52,13 @@ return {
         [15] = "LV11",
         [16] = "LV13",
         [17] = "LV15",
-        [20] = "deployer",
-        [23] = "drawer_sky",
-        [24] = "monitor",
+        [20] = "Deployer",
+        [23] = "Sky",
+        [24] = "Monitor",
         [25] = "LV3",
         [26] = "LV2",
         [27] = "LV4",
-        [28] = "server"
+        [28] = "Server"
     },
 
     protocols = {

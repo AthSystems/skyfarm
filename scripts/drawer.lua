@@ -6,7 +6,7 @@
 package.path = package.path .. ";/modules/?.lua"
 local config  = require("modules.config")
 local logging = require("modules.logging")
-local network = require("module.network")
+local network = require("modules.network")
 
 -- === Metadata ===
 local drawer_side = "back"
@@ -38,7 +38,7 @@ local function monitorDrawer()
     while true do
         local data = getDrawerData()
         if data then
-            logging.info("Skystone: " .. string.format("%.2f", data.percent) .. " | " .. tostring(data.count) .. "/" .. tostring(data.limit), data)
+            logging.info("Skystone: " .. string.format("%.2f", data.percent) .. "% | " .. tostring(data.count) .. "/" .. tostring(data.limit), data)
             --network.send(config.ids.monitor, data, config.protocols.logs)
         end
         sleep(5)
