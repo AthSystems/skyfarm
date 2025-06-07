@@ -110,18 +110,25 @@ local function handle_touch(x, y)
         local start_stop_label = is_running and "[ STOP ]" or "[ START ]"
         local start_stop_x = math.floor((screen_w - #start_stop_label) / 2) + 1
 
+        -- Start/Stop button
         if x >= start_stop_x and x < start_stop_x + #start_stop_label then
-            is_running = not is_running
-            send_control(is_running and config.keywords.start or config.keywords.stop)
+            local next_state = not is_running
+            send_control(next_state and config.keywords.start or config.keywords.stop)
+            is_running = next_state
             redraw_logs()
+
+        -- TRACE toggle
         elseif x >= screen_w - 9 then
             debug_trace = not debug_trace
             redraw_logs()
+
+        -- CLEAR
         elseif x >= 1 and x <= 7 then
             clear_logs()
         end
     end
 end
+
 
 local function listening()
     while true do
