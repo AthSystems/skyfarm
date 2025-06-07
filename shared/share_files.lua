@@ -12,7 +12,7 @@ local moduleNames = { "config", "logging", "network", "utils" }
 local modules = {}
 
 local function readModule(name)
-    local path = name .. "lua"
+    local path = name .. ".lua"
     if fs.exists(path) then
         local f = fs.open(path, "r")
         local content = f.readAll()
