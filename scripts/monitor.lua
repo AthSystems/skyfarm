@@ -171,6 +171,7 @@ local function listening()
             end
 
         elseif proto == config.protocols.update then
+            logging.trace("Updating shared files.")
             sleep(10)
             shell.run("fetch_modules.lua")
         end

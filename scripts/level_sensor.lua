@@ -44,6 +44,7 @@ local function listening()
         local sender, msg, protocol = rednet.receive()
 
         if protocol == config.protocols.status and msg == config.keywords.ping then
+            logging.trace("Updating shared files.")
             rednet.send(sender, config.keywords.pong, config.protocols.reply)
             logging.trace("Pong response sent to " .. sender)
 

@@ -58,6 +58,7 @@ while true do
 
     -- Module update handling
     elseif protocol == config.protocols.share and msg == config.keywords.update then
+        logging.trace("Updating shared files.")
         sleep(10)
         shell.run("fetch_modules.lua")
 
