@@ -8,10 +8,10 @@ local modem = peripheral.find("modem") or error("No modem found")
 rednet.open(peripheral.getName(modem))
 
 local modules = {
-    config = "<config-lua-string>",
-    logging = "<logging-lua-string>",
-    network = "<network-lua-string>",
-    utils = "<utils-lua-string>"
+    config = "config",
+    logging = "logging",
+    network = "network",
+    utils = "utils"
 }
 
 for k, v in pairs(modules) do
