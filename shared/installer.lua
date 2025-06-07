@@ -20,15 +20,15 @@ local files = {
 -- === Download Files ===
 for i, file in ipairs(files) do
 
-    local response = http.get(base_url .. file[i].folder .. file[i].name)
+    local response = http.get(base_url .. file.folder .. file.name)
     if response then
-        local handle = fs.open(file[i].name, "w")
+        local handle = fs.open(file.name, "w")
         handle.write(response.readAll())
         handle.close()
         response.close()
-        print("[V] Downloaded: " .. file[i].name)
+        print("[V] Downloaded: " .. file.name)
     else
-        print("[X] Failed to download: " .. file[i].name)
+        print("[X] Failed to download: " .. file.name)
     end
 end
 
