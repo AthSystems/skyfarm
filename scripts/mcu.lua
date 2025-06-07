@@ -41,9 +41,9 @@ end
 -- === Controls ===
 local function move_drills(reverse)
     if reverse then
-        network.sendAndWait(ids.drill, kw.drill_backward, kw.drill_full_back, 3)
+        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 3)
     else
-        network.sendAndWait(ids.drill, kw.drill_frontward, kw.drill_full_front, 3)
+        network.sendAndWait(ids.drill, kw.frontward, kw.drill_full_front, 3)
     end
 end
 
@@ -115,7 +115,7 @@ local function farm_cycle()
     logging.info("Starting farm cycle.")
     deploy()
     sleep(6)
-    
+
     -- Blind climb to LVL 5
     local reached_lv5 = false
     while not reached_lv5 do
