@@ -179,6 +179,7 @@ local function listener()
                     count   = d.count,
                     limit   = d.limit
                 }
+                redraw_all()
             elseif type(msg) == "table" and msg.source and msg.message then
                 add_log(format_entry(sender, msg))
             elseif type(msg) == "string" then
