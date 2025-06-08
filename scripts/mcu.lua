@@ -3,10 +3,6 @@
 --- DateTime: 8/06/2025 1:24 am
 ---
 
---- Skyfarm Master Script
---- Updated for modular structure and shared configs
---- Created by judea.
-
 -- === Shared Modules ===
 package.path = "/modules/?.lua;" .. package.path
 local config  = require("config")
@@ -22,7 +18,7 @@ local thresholds = config.thresholds
 -- === State ===
 local drill_state   = false
 local pusher_lvl    = 1
-local manual_stop   = false
+local manual_stop   = true
 local drawer_stop   = false
 local farm_running  = false
 
@@ -168,11 +164,13 @@ local function listening()
                 if sender == ids.monitor then
                     manual_stop = true
                     logging.warn("Manual stop triggered.")
+                    network.send(config.ids.monitor, config.keywords.stop, protocols.control)
                 end
             elseif msg == config.keywords.start then
                 if sender == ids.monitor then
                     manual_stop = false
                     logging.info("Manual start triggered.")
+                    network.send(config.ids.monitor, config.keywords.start, protocols.control)
                 end
             end
 
@@ -219,15 +217,25 @@ parallel.waitForAny(
     listening,
     function()
         while true do
+            logging.warn("Waiting for manual start")
+            while manual_stop == true do
+                sleep(0.2)
+            end
             update_drawer_fill_state()
 
             if drawer_stop then
+                if not manual_stop then
+                    rednet.send(config.ids.monitor, config.keywords.stop, protocols.control)
+                end
                 logging.warn("Drawer is full. Waiting...")
                 repeat
                     sleep(5)
                     update_drawer_fill_state()
                 until not drawer_stop
                 logging.info("Drawer ready. Resuming.")
+                if not manual_stop then
+                    rednet.send(config.ids.monitor, config.keywords.start, protocols.control)
+                end
             end
 
             if manual_stop then

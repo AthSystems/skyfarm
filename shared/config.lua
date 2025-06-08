@@ -79,6 +79,10 @@ return {
 
 
     keywords = {
+
+      stop = "stop",
+      start = "start",
+
       update = "update",
       ping = "ping",
       pong = "pong",
