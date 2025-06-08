@@ -63,10 +63,12 @@ end
 -- === Reset ===
 local function reset()
     network.send(ids.pusher, -15, protocols.control)
+    pusher_lvl = 1
     sleep(0.1)
     network.send(ids.drill, kw.backward, protocols.control)
     drill_state = true
     sleep(3)
+
 end
 
 -- === Fill Level Check ===
