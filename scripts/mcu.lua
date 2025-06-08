@@ -41,9 +41,9 @@ end
 -- === Controls ===
 local function move_drills(reverse)
     if reverse then
-        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back)
+        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 10)
     else
-        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front)
+        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, 10)
     end
 end
 
