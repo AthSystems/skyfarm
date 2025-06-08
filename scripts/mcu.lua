@@ -58,8 +58,13 @@ end
 
 -- === Reset ===
 local function reset()
-    move_block_pusher(0)
-    if not drill_state then
+    local _, mp = network.sendAndWait(config.ids.lv1, config.keywords.drill_full_back, _, 5,config.protocols.status)
+    if not mp then
+        move_block_pusher(0)
+    end
+
+    local _, md = network.sendAndWait(config.ids.dfb, config.keywords.drill_full_back, _, 5,config.protocols.status)
+    if not md then
         move_drills(true)
         drill_state = true
     end

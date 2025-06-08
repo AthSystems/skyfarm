@@ -48,10 +48,16 @@ local function listening()
     while true do
         local sender, msg, protocol = rednet.receive()
 
-        if protocol == config.protocols.status and msg == config.keywords.ping then
-            logging.trace("Updating shared files.")
-            rednet.send(sender, config.keywords.pong, config.protocols.reply)
-            logging.trace("Pong response sent to " .. sender)
+        if protocol == config.protocols.status then
+            if msg == config.keywords.ping then
+                logging.trace("Ping received from" .. config.names[sender] .. ".")
+                rednet.send(sender, config.keywords.pong, config.protocols.reply)
+                logging.trace("Pong response sent to " .. sender)
+
+            elseif msg == config.keywords.drill_full_back and id ~= 2  then
+                network.send(config.ids.master, redstone.getInput(redstone_side), config.protocols.reply)
+                logging.trace("Sending drill direction state : " .. redstone.getInput(redstone_side))
+            end
 
         -- Module update handling
         elseif protocol == config.protocols.share and msg == config.keywords.update then
