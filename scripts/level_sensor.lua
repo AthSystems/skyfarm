@@ -50,7 +50,7 @@ local function listening()
                 logging.trace("Pong response sent to " .. sender)
 
             elseif msg == config.keywords.plate_grounded then
-                network.send(config.ids.master, redstone.getInput(redstone_side), config.protocols.reply)
+                network.send(config.ids.master, tostring(redstone.getInput(redstone_side)), config.protocols.reply)
                 logging.trace("Sending grounded plate state : " .. redstone.getInput(redstone_side))
             end
 

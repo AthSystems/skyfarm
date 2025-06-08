@@ -60,13 +60,15 @@ end
 local function reset()
     network.send(config.ids.LV1, config.keywords.plate_grounded, config.protocols.status)
     local _, mp = rednet.receive(config.protocols.status, 5)
-    if not mp then
+    logging.prompt("MP Received "..mp)
+    if mp == "false" then
         move_block_pusher(0)
     end
 
     network.send(config.ids.dfb, config.keywords.drill_full_back, config.protocols.status)
     local _, md = rednet.receive(config.protocols.status, 5)
-    if not md then
+    logging.prompt("MD Received "..md)
+    if md == "false" then
         move_drills(true)
         drill_state = true
     end
