@@ -9,6 +9,7 @@ local logging = require("modules.logging")
 local network = require("modules.network")
 
 -- === Metadata ===
+local item_name = "Skystone"
 local drawer_side = "back"
 local drawer = peripheral.wrap(drawer_side) or error("No drawer found on " .. drawer_side)
 local slot = 1
@@ -18,7 +19,13 @@ local name = config.names[id]
 -- === Drawer Data Reader ===
 local function getDrawerData()
     local item = drawer.getItemDetail(slot)
-    if not item then return nil end
+    if not item then return {
+        source = name,
+        item = item_name,
+        count = 0,
+        limit = drawer.getItemLimit(slot),
+        percent = 0.0
+    } end
 
     local count = item.count
     local limit = drawer.getItemLimit(slot)
@@ -26,7 +33,7 @@ local function getDrawerData()
 
     return {
         source  = name,
-        item    = item.displayName,
+        item    = item_name,
         count   = count,
         limit   = limit,
         percent = percent

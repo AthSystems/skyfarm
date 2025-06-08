@@ -10,14 +10,13 @@ local network = require("modules.network")
 
 -- === Metadata ===
 local gearshift_side = "back"
-local max_speed = 2
-local direction_mod = -1
+local speedo_side = "right"
 local id = os.getComputerID()
 local name = config.names[id]
 
 -- === Peripheral Setup ===
 local gearshift = peripheral.wrap(gearshift_side) or error("No gearshift on " .. gearshift_side)
-local speedo = peripheral.wrap("left")
+local speedo = peripheral.wrap(speedo_side)
 
 
 local function getMaxSpeed()
@@ -25,7 +24,7 @@ local function getMaxSpeed()
 end
 
 local function getDirectionMod()
-    if speedo.getSpeed() > 0 then return -1 else return 1 end
+    if speedo.getSpeed() < 0 then return -1 else return 1 end
 end
 
 local function getSpeed()
