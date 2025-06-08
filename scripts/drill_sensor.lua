@@ -55,7 +55,7 @@ local function listening()
                 logging.trace("Pong response sent to " .. sender)
 
             elseif msg == config.keywords.drill_full_back and id ~= 2  then
-                network.send(config.ids.master, redstone.getInput(redstone_side), config.protocols.reply)
+                rednet.send(config.ids.master, redstone.getInput(redstone_side), config.protocols.reply)
                 logging.trace("Sending drill direction state : " .. tostring(redstone.getInput(redstone_side)))
             end
 
