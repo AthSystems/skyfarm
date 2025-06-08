@@ -355,6 +355,7 @@ end
 
 -- === Launch ===
 logging.prompt("Monitor started.")
+redraw()
 parallel.waitForAny(
     function()
         while true do
