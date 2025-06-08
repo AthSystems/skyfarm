@@ -138,7 +138,8 @@ local function draw_material(name)
     monitor.write(string.format("%s: %d%%", name, m.percent))
 
 
-    monitor.setCursorPos(math.floor(m.x + m.l/2 - #bottom_string/2), 6)
+    monitor.setCursorPos(math.floor(m.x + m.l/2 - #m.count / 2), 7)
+    monitor.setTextScale(2)
     if m.count > m.last then
         monitor.setTextColor(colors.green)
     elseif m.count < m.last then
@@ -147,8 +148,8 @@ local function draw_material(name)
         monitor.setTextColor(colors.white)
     end
     monitor.write(format_number(m.count))
+    monitor.setTextScale(1)
     monitor.setTextColor(colors.white)
-    monitor.write(" / " .. format_number( m.limit))
 end
 
 local function draw_drill()
