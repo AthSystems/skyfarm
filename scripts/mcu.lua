@@ -173,8 +173,17 @@ local function listening()
 
         elseif proto == protocols.share and msg == kw.update then
             logging.trace("Updating shared files.")
+            package.loaded["module.config"] = nil
+            package.loaded["module.logging"] = nil
+            package.loaded["module.network"] = nil
+            package.loaded["module.utils"] = nil
             shell.run("fetch_modules.lua")
-            network.send(config.ids.server,config.keywords.update)
+            config = require("module.config")
+            logging = require("module.logging")
+            network = require("module.network")
+            utils = require("module.utils")
+            logging.trace("Files updated.")
+            network.send(config.ids.server,config.keywords.update, config.protocols.share)
 
         elseif proto == protocols.status and msg == kw.ping then
             rednet.send(sender, config.keywords.pong, config.protocols.reply)

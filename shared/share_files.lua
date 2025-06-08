@@ -40,11 +40,15 @@ local logging = require("logging")
 local network = require("network")
 
 
-local startup = false
 if args and args[1] == "true" then
-    startup = true
     for _, id in ipairs(config.ids) do
-        network.sendAndWait(id, config.keywords.update, config.keywords.update, 5, config.protocols.share)
+        network.send(id, config.keywords.update, config.protocols.share)
+        local updated = false
+        while not updated do
+            local sender, message, proto = os.pullEvent("rednet_message")
+            updated = proto == config.protocols.share and sender == id and message == config.keywords.update
+            sleep(0.1)
+        end
     end
 end
 

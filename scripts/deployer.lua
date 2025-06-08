@@ -59,8 +59,17 @@ while true do
     -- Module update handling
     elseif protocol == config.protocols.share and msg == config.keywords.update then
         logging.trace("Updating shared files.")
+        package.loaded["module.config"] = nil
+        package.loaded["module.logging"] = nil
+        package.loaded["module.network"] = nil
+        package.loaded["module.utils"] = nil
         shell.run("fetch_modules.lua")
-        network.send(config.ids.server,config.keywords.update)
+        config = require("module.config")
+        logging = require("module.logging")
+        network = require("module.network")
+        utils = require("module.utils")
+        logging.trace("Files updated.")
+        network.send(config.ids.server,config.keywords.update, config.protocols.share)
 
     -- Deploy handling
     elseif protocol == config.protocols.control and msg == config.keywords.deploy then
