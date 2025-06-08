@@ -58,20 +58,10 @@ end
 
 -- === Reset ===
 local function reset()
-    network.send(config.ids.LV1, config.keywords.plate_grounded, config.protocols.status)
-    local _, mp = rednet.receive(config.protocols.reply, 5)
-    logging.prompt("MP Received "..mp)
-    if mp == false then
-        move_block_pusher(0)
-    end
-
-    network.send(config.ids.dfb, config.keywords.drill_full_back, config.protocols.status)
-    local _, md = rednet.receive(config.protocols.reply, 5)
-    logging.prompt("MD Received "..md)
-    if md == false then
-        move_drills(true)
-        drill_state = true
-    end
+    move_block_pusher(0)
+    move_drills(true)
+    drill_state = true
+    sleep(2)
 end
 
 -- === Fill Level Check ===
