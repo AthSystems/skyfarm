@@ -41,9 +41,9 @@ end
 -- === Controls ===
 local function move_drills(reverse)
     if reverse then
-        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 10)
+        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 30)
     else
-        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, 10)
+        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, 30)
     end
 end
 
@@ -90,7 +90,6 @@ local function upward_plate_sequence_with_timeout()
         if new then
             pusher_lvl = new
             last_feedback_time = os.clock()
-            print(pusher_lvl, drill_state, new)
             toggle_drills()
         elseif os.clock() - last_feedback_time > timeout then
             logging.warn("No LVL feedback in 20s. Lowering plate and restarting climb.")
