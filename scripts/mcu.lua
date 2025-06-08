@@ -39,7 +39,8 @@ local function move_block_pusher(target)
 end
 
 -- === Controls ===
-local function move_drills(reverse)
+local function move_drills(reverse , timeout)
+    local t = timeout and true or 30
     if reverse then
         network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 30)
     else
@@ -48,7 +49,7 @@ local function move_drills(reverse)
 end
 
 local function toggle_drills()
-    move_drills(not drill_state)
+    move_drills(not drill_state, 3)
     drill_state = not drill_state
 end
 
@@ -61,7 +62,6 @@ local function reset()
     move_block_pusher(0)
     move_drills(true)
     drill_state = true
-    sleep(2)
 end
 
 -- === Fill Level Check ===
