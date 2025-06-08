@@ -60,11 +60,13 @@ local function percent_color(p)
 end
 
 local function draw_square(x_start, y_start, x_end, y_end, fill, color)
+    local old = term.redirect(monitor)
     if fill then
         paintutils.drawFilledBox(x_start, y_start, x_end, y_end, color)
     else
         paintutils.drawBox(x_start, y_start, x_end, y_end, color)
     end
+    term.redirect(old)
 end
 
 local function format_time(seconds)
@@ -115,7 +117,7 @@ local function draw_status()
     if current_page ~= page_overview then return end
     clearRegion(0, 1, screen_w, 1)
     local status_text = "STATUS: " .. (is_running and "Running" or "Stopped")
-    monitor.setCursorPos(screen_w/2 - #status_text/2, 1)
+    monitor.setCursorPos(math.floor(screen_w/2 - #status_text/2), 1)
     monitor.setTextColor(colors.white)
     monitor.write("STATUS:")
     monitor.setTextColor(is_running and colors.lime or colors.orange)
@@ -134,7 +136,7 @@ local function draw_material(name)
     monitor.write(string.format("%s: %d%%", name, m.percent))
 
 
-    monitor.setCursorPos(m.x + m.l/2 - #bottom_string/2, 3)
+    monitor.setCursorPos(math.floor(m.x + m.l/2 - #bottom_string/2), 3)
     if m.count > m.last then
         monitor.setTextColor(colors.green)
     elseif m.count < m.last then
@@ -187,7 +189,6 @@ local function draw_timer()
 end
 
 local function button(x, label, bg, fg)
-    monitor.setTextScale(2)
     monitor.setCursorPos(x, screen_h)
     monitor.setBackgroundColor(bg)
     monitor.setTextColor(fg or colors.white)
