@@ -19,13 +19,14 @@ local baseURL = "https://raw.githubusercontent.com/AthSystems/skyfarm/refs/heads
 local positions = {
   { name = "redstone", x = 0, y = 0 },
   { name = "quartz", x = 1, y = 0 },
-  { name = "skystone", x = 2, y = 0 },
+  { name = "sky_dust", x = 2, y = 0 },
   { name = "certus", x = 3, y = 0 }
 }
 
 -- Function to check and download if needed
 local function ensureImage(name)
   local path = "images/" .. name .. ".nfp"
+  shell.run("rm "..path)
   if not fs.exists(path) then
     print("Downloading: " .. name)
     local response = http.get(baseURL .. name .. ".nfp")
