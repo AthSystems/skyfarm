@@ -31,7 +31,7 @@ local function watchRedstone()
 
         if state and not last_redstone_state then
             network.send(master_id, fb_cmd, config.protocols.reply)
-            logging.trace(name .. ": Plate at " .. fb_cmd)
+            logging.trace(name .. ": Plate at " .. fb_cmd, level)
         end
 
         last_redstone_state = state
