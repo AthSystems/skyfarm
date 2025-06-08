@@ -112,7 +112,7 @@ local function clearRegion(x_start, y_start, x_end, y_end)
 end
 
 local function draw_status()
-    if not current_page == page_overview then return end
+    if current_page ~= page_overview then return end
     clearRegion(0, 1, screen_w, 1)
     local status_text = "STATUS: " .. (is_running and "Running" or "Stopped")
     monitor.setCursorPos(screen_w/2 - #status_text/2, 1)
@@ -123,7 +123,7 @@ local function draw_status()
 end
 
 local function draw_material(name)
-    if not current_page == page_overview then return end
+    if current_page ~= page_overview then return end
     local m = material_data[name]
     local bottom_string = format_number(m.count) .. "/ " .. format_number( m.limit)
 
@@ -148,7 +148,7 @@ local function draw_material(name)
 end
 
 local function draw_drill()
-    if not current_page == page_overview then return end
+    if current_page ~= page_overview then return end
 
     -- Drill back square
     clearRegion(2, plate_y,3, plate_y+1)
@@ -160,7 +160,7 @@ local function draw_drill()
 end
 
 local function draw_plate_bar()
-    if not current_page == page_overview then return end
+    if current_page ~= page_overview then return end
     local bar_x = 10
     local bar_len = screen_w - 20
     local level_max = 15
@@ -174,6 +174,7 @@ local function draw_plate_bar()
 end
 
 local function draw_timer()
+    if current_page ~= page_overview then return end
     local str_time = format_time(cycle_timer)
 
     -- Timer
@@ -263,20 +264,20 @@ local function timer()
 end
 
 local function handle_touch(x, y)
-    if current_page == "overall" and y == screen_h then
+    if current_page == page_overview and y == screen_h then
         if x >= 2 and x <= 9 then
             is_running = not is_running
             network.send(config.ids.master, is_running and config.keywords.start or config.keywords.stop, config.protocols.control)
         elseif x >= screen_w - 8 then
-            current_page = "logs"
+            current_page = page_logs
         end
-    elseif current_page == "logs" and y == screen_h then
+    elseif current_page == page_logs and y == screen_h then
         if x >= 2 and x <= 9 then
             log_lines = {}
         elseif x >= 12 and x <= 22 then
             debug_trace = not debug_trace
         elseif x >= screen_w - 10 then
-            current_page = "overall"
+            current_page = page_overview
         end
     end
     redraw()
@@ -298,7 +299,7 @@ local function listen()
                     material_data[msg.data.item].limit = msg.data.limit
                     material_data[msg.data.item].percent = msg.data.percent
                     add_entry(msg)
-                    if current_page == page_overview then draw_material(msg.item.data) else redraw() end
+                    if current_page == page_overview then draw_material(msg.data.item) else redraw() end
 
                 -- Drill Position Handling
                 elseif sender == config.ids.dff or sender == config.ids.dfb then
