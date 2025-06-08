@@ -35,20 +35,16 @@ local function move_block_pusher(target)
 end
 
 -- === Controls ===
-local function move_drills(reverse , timeout)
-    local t = 30
-    if timeout ~= nil then t = timeout end
-    logging.prompt("Timeout : " ..tostring(t))
-
+local function move_drills(reverse)
     if reverse then
-        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, t)
+        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 30)
     else
-        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, t)
+        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, 30)
     end
 end
 
 local function toggle_drills()
-    move_drills(not drill_state, 3)
+    move_drills(not drill_state)
     drill_state = not drill_state
 end
 
