@@ -39,8 +39,8 @@ local config = require("config")
 local logging = require("logging")
 local network = require("network")
 
-
-if args and args[1] == "true" then
+logging.prompt(table.unpack(args))
+if args ~= nil and args[1] == "true" then
     for _, id in ipairs(config.ids) do
         network.send(id, config.keywords.update, config.protocols.share)
         local updated = false
