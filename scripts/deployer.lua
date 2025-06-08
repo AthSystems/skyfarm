@@ -24,7 +24,7 @@ local function getMaxSpeed()
 end
 
 local function getDirectionMod()
-    if speedo.getSpeed() < 0 then return -1 else return 1 end
+    if speedo.getSpeed() > 0 then return -1 else return 1 end
 end
 
 local function getSpeed()
@@ -83,8 +83,11 @@ while true do
     -- Deploy handling
     elseif protocol == config.protocols.control and msg == config.keywords.deploy then
         logging.trace(name .. ": Deploy command received")
+        redstone.setOutput("bottom", true)
         deploy()
         network.send(senderID, config.keywords.deploy_done, config.protocols.reply)
         logging.trace(name .. ": Deploy done.")
+        sleep(5)
+        redstone.setOut("bottom", false)
     end
 end
