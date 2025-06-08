@@ -212,11 +212,11 @@ reset()
 parallel.waitForAny(
     listening,
     function()
+        logging.warn("Waiting for manual start")
+        while manual_stop == true do
+            sleep(0.2)
+        end
         while true do
-            logging.warn("Waiting for manual start")
-            while manual_stop == true do
-                sleep(0.2)
-            end
             update_drawer_fill_state()
 
             if drawer_stop then
