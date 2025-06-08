@@ -109,7 +109,7 @@ local function clearScreen()
 end
 
 local function clearRegion(x_start, y_start, x_end, y_end)
-    draw_square(x_start, y_start, x_end, y_end, true, color.black)
+    draw_square(x_start, y_start, x_end, y_end, true, colors.black)
 end
 
 local function draw_status()
@@ -169,8 +169,8 @@ local function draw_plate_bar()
 
     clearRegion(bar_x, plate_y,bar_x + bar_len, plate_y+1)
 
-    draw_square(bar_x, plate_y, bar_x + bar_len, plate_y + 1, false, color.gray)
-    draw_square(bar_x, plate_y, bar_x + filled_blocks, plate_y+1, true, color.yellow)
+    draw_square(bar_x, plate_y, bar_x + bar_len, plate_y + 1, false, colors.gray)
+    draw_square(bar_x, plate_y, bar_x + filled_blocks, plate_y+1, true, colors.yellow)
 
 end
 
@@ -180,7 +180,7 @@ local function draw_timer()
     -- Timer
     monitor.setCursorPos(screen_w/2 - #("Timer: " .. str_time), plate_y + 2)
     monitor.setBackgroundColor(colors.black)
-    monitor.setTextColor(color.white)
+    monitor.setTextColor(colors.white)
     monitor.write("Timer: ")
     monitor.setTextColor(colors.lime)
     monitor.write(str_time)
