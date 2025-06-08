@@ -119,7 +119,7 @@ local function draw_status()
     if current_page ~= page_overview then return end
     clearRegion(0, 3, screen_w, 3)
     local status_text = "STATUS: " .. (is_running and "Running" or "Stopped")
-    monitor.setCursorPos(math.floor(screen_w/2 - #status_text/2), 1)
+    monitor.setCursorPos(math.floor(screen_w/2 - #status_text/2), 3)
     monitor.setTextColor(colors.white)
     monitor.write("STATUS:")
     monitor.setTextColor(is_running and colors.lime or colors.orange)
