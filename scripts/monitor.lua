@@ -1,6 +1,5 @@
 --- Skyfarm Monitor with Graphical UI
---- Created by judea.
---- Updated: 8/06/2025
+--- Created by judea. Updated: 8/06/2025
 
 -- === Shared Modules ===
 package.path = package.path .. ";/modules/?.lua"
@@ -27,7 +26,6 @@ local log_area_height = screen_h - 7
 -- === Color Settings ===
 local color_time   = colors.lime
 local color_sender = colors.orange
-
 local level_colors = {
     trace = colors.lightGray,
     info  = colors.white,
@@ -35,15 +33,14 @@ local level_colors = {
     error = colors.red
 }
 
--- === Material Data ===
+-- === Material Info ===
 local materials = {
-    { name = "Skystone", percent = 0, count = 0, limit = 0 },
-    { name = "Certus", percent = 0, count = 0, limit = 0 },
-    { name = "Redstone", percent = 0, count = 0, limit = 0 },
-    { name = "Quartz", percent = 0, count = 0, limit = 0 }
+    Skystone = { percent = 0, count = 0, limit = 0 },
+    Certus   = { percent = 0, count = 0, limit = 0 },
+    Redstone = { percent = 0, count = 0, limit = 0 },
+    Quartz   = { percent = 0, count = 0, limit = 0 }
 }
 
--- === UI Drawing ===
 local function get_percent_color(p)
     if p < 30 then return colors.white
     elseif p < 60 then return colors.green
@@ -51,30 +48,30 @@ local function get_percent_color(p)
     else return colors.red end
 end
 
+-- === Drawing UI ===
 local function draw_top_section()
-    monitor.setCursorPos(1, 1)
-    monitor.setTextColor(colors.white)
     local status_text = is_running and "Running" or "Stopped"
     local status_color = is_running and colors.lime or colors.orange
-    local centered_x = math.floor((screen_w - 15) / 2)
-    monitor.setCursorPos(centered_x, 1)
+    local status_x = math.floor((screen_w - 15) / 2)
+    monitor.setCursorPos(status_x, 1)
+    monitor.setTextColor(colors.white)
     monitor.write("STATUS : ")
     monitor.setTextColor(status_color)
     monitor.write(status_text)
 
-    -- 2x2 grid (2 materials per row)
+    local keys = { "Skystone", "Certus", "Redstone", "Quartz" }
     for i = 1, 2 do
         for j = 1, 2 do
-            local index = (i - 1) * 2 + j
-            local material = materials[index]
+            local name = keys[(i - 1) * 2 + j]
+            local mat = materials[name]
             local y = 1 + i * 2
             local x = (j - 1) * math.floor(screen_w / 2) + 1
             monitor.setCursorPos(x, y)
-            monitor.setTextColor(get_percent_color(material.percent))
-            monitor.write(string.format("%s : %d%%", material.name, material.percent))
+            monitor.setTextColor(get_percent_color(mat.percent))
+            monitor.write(string.format("%s : %d%%", name, mat.percent))
             monitor.setCursorPos(x, y + 1)
             monitor.setTextColor(colors.white)
-            monitor.write(string.format("%d / %d", material.count, material.limit))
+            monitor.write(string.format("%d / %d", mat.count, mat.limit))
         end
     end
 end
@@ -95,7 +92,6 @@ local function draw_logs()
 end
 
 local function draw_buttons()
-    -- Start/Stop (center)
     local start_stop_label = is_running and "[ STOP ]" or "[ START ]"
     local start_stop_x = math.floor((screen_w - #start_stop_label) / 2) + 1
     monitor.setCursorPos(start_stop_x, screen_h)
@@ -103,14 +99,12 @@ local function draw_buttons()
     monitor.setTextColor(colors.white)
     monitor.write(start_stop_label)
 
-    -- Trace Toggle (right)
     local trace_label = debug_trace and "[TRACE ✓]" or "[TRACE ×]"
     monitor.setCursorPos(screen_w - #trace_label + 1, screen_h)
     monitor.setBackgroundColor(colors.lightGray)
     monitor.setTextColor(colors.black)
     monitor.write(trace_label)
 
-    -- Clear Button (left)
     local clear_label = "[CLEAR]"
     monitor.setCursorPos(1, screen_h)
     monitor.setBackgroundColor(colors.lightGray)
@@ -126,17 +120,16 @@ local function redraw_all()
     draw_buttons()
 end
 
+-- === Logging and Input ===
 local function clear_logs()
     log_lines = {}
     redraw_all()
 end
 
 local function send_control(msg)
-    local master_id = config.ids.master or 1
-    network.send(master_id, msg, config.protocols.control)
+    network.send(config.ids.master, msg, config.protocols.control)
 end
 
--- === Logging Handler ===
 local function add_log(entry)
     if entry.level == "trace" and not debug_trace then return end
     table.insert(log_lines, entry)
@@ -154,49 +147,40 @@ local function format_entry(sender, payload)
     }
 end
 
--- === Event Handlers ===
 local function handle_touch(x, y)
     if y == screen_h then
         local start_stop_label = is_running and "[ STOP ]" or "[ START ]"
         local start_stop_x = math.floor((screen_w - #start_stop_label) / 2) + 1
 
-        -- Start/Stop button
         if x >= start_stop_x and x < start_stop_x + #start_stop_label then
             local next_state = not is_running
             send_control(next_state and config.keywords.start or config.keywords.stop)
             is_running = next_state
             redraw_all()
-
-        -- TRACE toggle
         elseif x >= screen_w - 9 then
             debug_trace = not debug_trace
             redraw_all()
-
-        -- CLEAR
         elseif x >= 1 and x <= 7 then
             clear_logs()
         end
     end
 end
 
-local function listening()
+-- === Listeners ===
+local function listener()
     while true do
         local sender, msg, proto = rednet.receive()
 
         if proto == config.protocols.logs then
-
-            if sender == config.ids.drawer_sky then
-                local data = msg[data]
+            if sender == config.ids.drawer_sky and msg.data then
+                local d = msg.data
                 materials["Skystone"] = {
-                    percent = data.percent,
-                    count = data.count,
-                    limit = data.limit
+                    percent = math.floor(d.percent + 0.5),
+                    count   = d.count,
+                    limit   = d.limit
                 }
-
             elseif type(msg) == "table" and msg.source and msg.message then
-                local entry = format_entry(sender, msg)
-                add_log(entry)
-                redraw_all()
+                add_log(format_entry(sender, msg))
             elseif type(msg) == "string" then
                 add_log({
                     time = os.date("%H:%M:%S"),
@@ -204,15 +188,12 @@ local function listening()
                     level = "info",
                     msg = msg
                 })
-                redraw_all()
             end
+            redraw_all()
 
         elseif proto == config.protocols.control then
-            if msg == config.keywords.start then
-                is_running = true
-            elseif msg == config.keywords.stop then
-                is_running = false
-            end
+            if msg == config.keywords.start then is_running = true
+            elseif msg == config.keywords.stop then is_running = false end
             redraw_all()
 
         elseif proto == config.protocols.status and msg == config.keywords.ping then
@@ -226,16 +207,11 @@ local function listening()
 
         elseif proto == config.protocols.update then
             logging.trace("Updating shared files.")
-            package.loaded["module.config"] = nil
-            package.loaded["module.logging"] = nil
-            package.loaded["module.network"] = nil
-            package.loaded["module.utils"] = nil
             shell.run("fetch_modules.lua")
-            config = require("module.config")
-            logging = require("module.logging")
-            network = require("module.network")
-            utils = require("module.utils")
-            logging.trace("Files updated.")
+            config  = require("modules.config")
+            logging = require("modules.logging")
+            network = require("modules.network")
+            redraw_all()
             network.send(config.ids.server, config.keywords.update, config.protocols.share)
         end
     end
@@ -244,11 +220,6 @@ end
 -- === Launch ===
 logging.prompt("Monitor started.")
 parallel.waitForAny(
-    function()
-        while true do
-            local _, _, x, y = os.pullEvent("monitor_touch")
-            handle_touch(x, y)
-        end
-    end,
-    listening
+    function() while true do local _, _, x, y = os.pullEvent("monitor_touch") handle_touch(x, y) end end,
+    listener
 )
