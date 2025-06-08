@@ -44,7 +44,7 @@ local level_colors = {
 }
 
 
-local plate_y = 14
+local plate_y = 13
 local drill_back = false
 local drill_front = false
 local pusher_level = 1
@@ -116,7 +116,7 @@ end
 
 local function draw_status()
     if current_page ~= page_overview then return end
-    clearRegion(0, 1, screen_w, 1)
+    clearRegion(0, 2, screen_w, 2)
     local status_text = "STATUS: " .. (is_running and "Running" or "Stopped")
     monitor.setCursorPos(math.floor(screen_w/2 - #status_text/2), 1)
     monitor.setTextColor(colors.white)
@@ -130,14 +130,14 @@ local function draw_material(name)
     local m = material_data[name]
     local bottom_string = format_number(m.count) .. "/ " .. format_number( m.limit)
 
-    clearRegion(m.x, 2, m.x + m.l, 3)
+    clearRegion(m.x, 5, m.x + m.l, 6)
 
-    monitor.setCursorPos(m.x, 2)
+    monitor.setCursorPos(m.x, 5)
     monitor.setTextColor(percent_color(m.percent))
     monitor.write(string.format("%s: %d%%", name, m.percent))
 
 
-    monitor.setCursorPos(math.floor(m.x + m.l/2 - #bottom_string/2), 3)
+    monitor.setCursorPos(math.floor(m.x + m.l/2 - #bottom_string/2), 6)
     if m.count > m.last then
         monitor.setTextColor(colors.green)
     elseif m.count < m.last then
@@ -181,7 +181,7 @@ local function draw_timer()
     local str_time = format_time(cycle_timer)
 
     -- Timer
-    monitor.setCursorPos(screen_w/2 - #("Timer: " .. str_time), plate_y + 2)
+    monitor.setCursorPos(screen_w/2 - #("Timer: " .. str_time), plate_y + 3)
     monitor.setBackgroundColor(colors.black)
     monitor.setTextColor(colors.white)
     monitor.write("Timer: ")
