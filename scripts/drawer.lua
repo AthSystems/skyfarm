@@ -39,7 +39,6 @@ local function monitorDrawer()
         local data = getDrawerData()
         if data then
             logging.info("Skystone: " .. string.format("%.2f", data.percent) .. "% | " .. tostring(data.count) .. "/" .. tostring(data.limit), data)
-            --network.send(config.ids.monitor, data, config.protocols.logs)
         end
         sleep(5)
     end

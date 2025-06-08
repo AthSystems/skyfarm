@@ -1,6 +1,6 @@
---- Skyfarm Monitor with Graphical UI
---- Created by judea.
---- Updated: 8/06/2025
+--- Skyfarm Monitor
+--- Updated for structured payload, log level filter, and modular config
+--- DateTime: 7/06/2025
 
 -- === Shared Modules ===
 package.path = package.path .. ";/modules/?.lua"
@@ -22,7 +22,7 @@ local is_running = false
 local debug_trace = false
 local log_lines = {}
 local screen_w, screen_h = monitor.getSize()
-local log_area_height = screen_h - 7
+local log_area_height = screen_h - 2
 
 -- === Color Settings ===
 local color_time   = colors.lime
@@ -35,54 +35,13 @@ local level_colors = {
     error = colors.red
 }
 
--- === Material Data ===
-local materials = {
-    { name = "Skystone", percent = 0, count = 0, limit = 0 },
-    { name = "Certus", percent = 0, count = 0, limit = 0 },
-    { name = "Redstone", percent = 0, count = 0, limit = 0 },
-    { name = "Quartz", percent = 0, count = 0, limit = 0 }
-}
-
 -- === UI Drawing ===
-local function get_percent_color(p)
-    if p < 30 then return colors.white
-    elseif p < 60 then return colors.green
-    elseif p < 90 then return colors.orange
-    else return colors.red end
-end
+local function redraw_logs()
+    monitor.setBackgroundColor(colors.black)
+    monitor.clear()
 
-local function draw_top_section()
-    monitor.setCursorPos(1, 1)
-    monitor.setTextColor(colors.white)
-    local status_text = is_running and "Running" or "Stopped"
-    local status_color = is_running and colors.lime or colors.orange
-    local centered_x = math.floor((screen_w - 15) / 2)
-    monitor.setCursorPos(centered_x, 1)
-    monitor.write("STATUS : ")
-    monitor.setTextColor(status_color)
-    monitor.write(status_text)
-
-    -- 2x2 grid (2 materials per row)
-    for i = 1, 2 do
-        for j = 1, 2 do
-            local index = (i - 1) * 2 + j
-            local material = materials[index]
-            local y = 1 + i * 2
-            local x = (j - 1) * math.floor(screen_w / 2) + 1
-            monitor.setCursorPos(x, y)
-            monitor.setTextColor(get_percent_color(material.percent))
-            monitor.write(string.format("%s : %d%%", material.name, material.percent))
-            monitor.setCursorPos(x, y + 1)
-            monitor.setTextColor(colors.white)
-            monitor.write(string.format("%d / %d", material.count, material.limit))
-        end
-    end
-end
-
-local function draw_logs()
-    local offset = 6
     for i, entry in ipairs(log_lines) do
-        monitor.setCursorPos(1, i + offset)
+        monitor.setCursorPos(1, i)
         monitor.setTextColor(color_time)
         monitor.write("[" .. entry.time .. "] ")
 
@@ -92,9 +51,8 @@ local function draw_logs()
         monitor.setTextColor(level_colors[entry.level] or colors.white)
         monitor.write(entry.msg)
     end
-end
 
-local function draw_buttons()
+    -- === Buttons ===
     -- Start/Stop (center)
     local start_stop_label = is_running and "[ STOP ]" or "[ START ]"
     local start_stop_x = math.floor((screen_w - #start_stop_label) / 2) + 1
@@ -118,17 +76,9 @@ local function draw_buttons()
     monitor.write(clear_label)
 end
 
-local function redraw_all()
-    monitor.setBackgroundColor(colors.black)
-    monitor.clear()
-    draw_top_section()
-    draw_logs()
-    draw_buttons()
-end
-
 local function clear_logs()
     log_lines = {}
-    redraw_all()
+    redraw_logs()
 end
 
 local function send_control(msg)
@@ -165,12 +115,12 @@ local function handle_touch(x, y)
             local next_state = not is_running
             send_control(next_state and config.keywords.start or config.keywords.stop)
             is_running = next_state
-            redraw_all()
+            redraw_logs()
 
         -- TRACE toggle
         elseif x >= screen_w - 9 then
             debug_trace = not debug_trace
-            redraw_all()
+            redraw_logs()
 
         -- CLEAR
         elseif x >= 1 and x <= 7 then
@@ -179,24 +129,16 @@ local function handle_touch(x, y)
     end
 end
 
+
 local function listening()
     while true do
         local sender, msg, proto = rednet.receive()
 
         if proto == config.protocols.logs then
-
-            if sender == config.ids.drawer_sky then
-                local data = msg[data]
-                materials["Skystone"] = {
-                    percent = data.percent,
-                    count = data.count,
-                    limit = data.limit
-                }
-
-            elseif type(msg) == "table" and msg.source and msg.message then
+            if type(msg) == "table" and msg.source and msg.message then
                 local entry = format_entry(sender, msg)
                 add_log(entry)
-                redraw_all()
+                redraw_logs()
             elseif type(msg) == "string" then
                 add_log({
                     time = os.date("%H:%M:%S"),
@@ -204,25 +146,36 @@ local function listening()
                     level = "info",
                     msg = msg
                 })
-                redraw_all()
+                redraw_logs()
             end
 
         elseif proto == config.protocols.control then
             if msg == config.keywords.start then
                 is_running = true
+                redraw_logs()
             elseif msg == config.keywords.stop then
                 is_running = false
+                redraw_logs()
             end
-            redraw_all()
 
-        elseif proto == config.protocols.status and msg == config.keywords.ping then
-            rednet.send(sender, config.keywords.pong, config.protocols.reply)
-            add_log({
-                time = os.date("%H:%M:%S"),
-                sender = config.names[os.getComputerID()],
-                level = "trace",
-                msg = "Pong response sent to " .. sender
-            })
+        elseif proto == config.protocols.status then
+            if msg == config.keywords.ping then
+                rednet.send(sender, config.keywords.pong, config.protocols.reply)
+                add_log({
+                    time = os.date("%H:%M:%S"),
+                    sender = config.names[os.getComputerID()],
+                    level = trace,
+                    msg = "Pong response sent to " .. sender
+                })
+            else
+                add_log({
+                    time = os.date("%H:%M:%S"),
+                    sender = config.names[sender] or ("ID " .. tostring(sender)),
+                    level = "info",
+                    msg = msg
+                })
+                redraw_logs()
+            end
 
         elseif proto == config.protocols.update then
             logging.trace("Updating shared files.")
@@ -236,7 +189,7 @@ local function listening()
             network = require("module.network")
             utils = require("module.utils")
             logging.trace("Files updated.")
-            network.send(config.ids.server, config.keywords.update, config.protocols.share)
+            network.send(config.ids.server,config.keywords.update, config.protocols.share)
         end
     end
 end
