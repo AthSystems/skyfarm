@@ -40,11 +40,14 @@ end
 
 -- === Controls ===
 local function move_drills(reverse , timeout)
-    local t = timeout and true or 30
+    local t = 30
+    if timeout ~= nil then t = timeout end
+    logging.prompt("Timeout : " ..tostring(t))
+
     if reverse then
-        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, 30)
+        network.sendAndWait(ids.drill, kw.backward, kw.drill_full_back, t)
     else
-        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, 30)
+        network.sendAndWait(ids.drill, kw.forward, kw.drill_full_front, t)
     end
 end
 
@@ -59,9 +62,11 @@ end
 
 -- === Reset ===
 local function reset()
-    move_block_pusher(0)
-    move_drills(true)
+    network.send(ids.pusher, -15, protocols.control)
+    sleep(0.1)
+    network.send(ids.drill, kw.backward, protocols.control)
     drill_state = true
+    sleep(3)
 end
 
 -- === Fill Level Check ===
