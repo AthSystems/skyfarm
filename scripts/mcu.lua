@@ -58,12 +58,14 @@ end
 
 -- === Reset ===
 local function reset()
-    local _, mp = network.sendAndWait(config.ids.lv1, config.keywords.drill_full_back, _, 5,config.protocols.status)
+    network.send(config.ids.LV1, config.keywords.plate_grounded, config.protocols.status)
+    local _, mp = rednet.receive(config.protocols.status, 5)
     if not mp then
         move_block_pusher(0)
     end
 
-    local _, md = network.sendAndWait(config.ids.dfb, config.keywords.drill_full_back, _, 5,config.protocols.status)
+    network.send(config.ids.dfb, config.keywords.drill_full_back, config.protocols.status)
+    local _, md = rednet.receive(config.protocols.status, 5)
     if not md then
         move_drills(true)
         drill_state = true
