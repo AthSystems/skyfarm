@@ -50,6 +50,7 @@ local drill_front = false
 local pusher_level = 1
 local cycle_timer = 0
 
+
 -- === Helper Functions ===
 
 local function percent_color(p)
@@ -294,7 +295,7 @@ local function listen()
             if type(msg) == "table" then
                 -- Material Data Handling - Skystone
 
-                if sender == config.ids.drawer_sky then
+                if sender == config.ids.drawer_sky and msg.data then
                     material_data[msg.data.item].last = material_data[msg.data.item].count
                     material_data[msg.data.item].count = msg.data.count
                     material_data[msg.data.item].limit = msg.data.limit
@@ -303,7 +304,9 @@ local function listen()
                     if current_page == page_overview then draw_material(msg.data.item) else redraw() end
 
                 -- Drill Position Handling
-                elseif sender == config.ids.dff or sender == config.ids.dfb then
+                elseif
+                    (sender == config.ids.dff or sender == config.ids.dfb) and
+                    (msg.message:find(config.keywords.drill_full_back) or msg.message:find(config.keywords.drill_full_front)) then
                     if sender == config.ids.dfb then
                         drill_back = true
                         drill_front = false
@@ -315,8 +318,9 @@ local function listen()
                     if current_page == page_overview then draw_drill() else redraw() end
 
                 -- Plate Position Handling
-                elseif msg.message:find("LVL") then
+                elseif  msg.message:find(config.keywords.plate_moved) and msg.data then
                     local level = tonumber(msg.data)
+
                     pusher_level = level
                     add_entry(msg)
                     if current_page == page_overview then draw_plate_bar() else redraw() end
