@@ -29,11 +29,12 @@ local log_lines = {}
 local log_area_height = screen_h - 3
 
 local spacing = math.floor(screen_w / 4)
+local material_offset = 4
 local material_data = {
-    Skystone = { percent = 0, count = 0, limit = 0, last = 0 , x = 1, l = #("Skystone: 100 %")},
-    Certus = { percent = 0, count = 0, limit = 0, last = 0, x = 1 + spacing, l = #("Certus: 100 %")},
-    Redstone = { percent = 0, count = 0, limit = 0, last = 0, x = 1 + 2 * spacing, l = #("Redstone: 100 %") },
-    Quartz = { percent = 0, count = 0, limit = 0, last = 0, x = 1 + 3 * spacing, l = #("Quartz: 100 %")}
+    Skystone = { percent = 0, count = 0, limit = 0, last = 0 , x = material_offset, l = #("Skystone: 100 %")},
+    Certus = { percent = 0, count = 0, limit = 0, last = 0, x = material_offset + spacing, l = #("Certus: 100 %")},
+    Redstone = { percent = 0, count = 0, limit = 0, last = 0, x = material_offset + 2 * spacing, l = #("Redstone: 100 %") },
+    Quartz = { percent = 0, count = 0, limit = 0, last = 0, x = material_offset + 3 * spacing, l = #("Quartz: 100 %")}
 }
 
 local level_colors = {
@@ -154,25 +155,25 @@ local function draw_drill()
     if current_page ~= page_overview then return end
 
     -- Drill back square
-    clearRegion(2, plate_y,3, plate_y+1)
-    draw_square(2, plate_y, 3, plate_y+1,  drill_back, drill_back and colors.yellow or colors.gray)
+    clearRegion(3, plate_y,4, plate_y+1)
+    draw_square(3, plate_y, 4, plate_y+1,  drill_back, drill_back and colors.yellow or colors.lightBlue)
 
     -- Drill front square
     clearRegion(screen_w - 3, plate_y,screen_w - 2, plate_y+1)
-    draw_square(screen_w - 3, plate_y, screen_w - 2, plate_y+1, drill_front, drill_front and colors.yellow or colors.gray)
+    draw_square(screen_w - 3, plate_y, screen_w - 2, plate_y+1, drill_front, drill_front and colors.yellow or colors.lightBlue)
 end
 
 local function draw_plate_bar()
     if current_page ~= page_overview then return end
-    local bar_x = 10
-    local bar_len = screen_w - 20
+    local bar_x = 11
+    local bar_len = screen_w - 19
     local level_max = 15
     local filled_blocks = math.floor((pusher_level / level_max) * bar_len)
 
     clearRegion(bar_x, plate_y,bar_x + bar_len, plate_y+1)
 
     draw_square(bar_x, plate_y, bar_x + bar_len, plate_y + 1, false, colors.gray)
-    draw_square(bar_x, plate_y, bar_x + filled_blocks, plate_y+1, true, colors.yellow)
+    draw_square(bar_x, plate_y, bar_x + filled_blocks, plate_y+1, true, colors.orange)
 
 end
 
