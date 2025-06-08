@@ -131,7 +131,7 @@ local function draw_material(name)
     local m = material_data[name]
     local bottom_string = format_number(m.count) .. " / " .. format_number( m.limit)
 
-    clearRegion(m.x, 5, m.x + m.l, 6)
+    clearRegion(m.x, 5, m.x + m.l, 7)
 
     monitor.setCursorPos(m.x, 5)
     monitor.setTextColor(percent_color(m.percent))

@@ -17,10 +17,19 @@ local name = config.names[id]
 
 -- === Peripheral Setup ===
 local gearshift = peripheral.wrap("bottom") or error("No gearshift on bottom", 0)
+local speedo = peripheral.wrap("left")
 
 
-function getSpeed()
-    return max_speed * direction_mod
+local function getMaxSpeed()
+    if math.abs(speedo.getSpeed()) < 128 then return 2 else return 1 end
+end
+
+local function getDirectionMod()
+    if speedo.getSpeed() < 0 then return -1 else return 1 end
+end
+
+local function getSpeed()
+    return getMaxSpeed() * getDirectionMod()
 end
 
 
