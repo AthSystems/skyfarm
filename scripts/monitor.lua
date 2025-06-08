@@ -28,7 +28,6 @@ local current_page = page_overview
 local log_lines = {}
 local log_area_height = screen_h - 3
 
-local mat_names = { "Skystone", "Certus", "Redstone", "Quartz" }
 local spacing = math.floor(screen_w / 4)
 local material_data = {
     Skystone = { percent = 0, count = 0, limit = 0, last = 0 , x = 1, l = #("Skystone: 100 %")},
@@ -201,7 +200,9 @@ local function draw_overall_page()
     draw_status()
 
     -- Materials
-    draw_materials()
+    for k, _ in pairs(material_data) do
+        draw_material(k)
+    end
 
     -- Drills and Plate
     draw_plate_bar()
@@ -244,7 +245,7 @@ local function draw_log_page()
 end
 
 local function redraw()
-    if current_page == "overall" then
+    if current_page == page_overview then
         draw_overall_page()
     else
         draw_log_page()
@@ -355,5 +356,5 @@ parallel.waitForAny(
         end
     end,
     listen,
-    timer()
+    timer
 )
