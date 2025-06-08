@@ -117,7 +117,7 @@ end
 
 local function draw_status()
     if current_page ~= page_overview then return end
-    clearRegion(0, 2, screen_w, 2)
+    clearRegion(0, 3, screen_w, 3)
     local status_text = "STATUS: " .. (is_running and "Running" or "Stopped")
     monitor.setCursorPos(math.floor(screen_w/2 - #status_text/2), 1)
     monitor.setTextColor(colors.white)
@@ -129,7 +129,7 @@ end
 local function draw_material(name)
     if current_page ~= page_overview then return end
     local m = material_data[name]
-    local bottom_string = format_number(m.count) .. "/ " .. format_number( m.limit)
+    local bottom_string = format_number(m.count) .. " / " .. format_number( m.limit)
 
     clearRegion(m.x, 5, m.x + m.l, 6)
 
@@ -148,7 +148,7 @@ local function draw_material(name)
     end
     monitor.write(format_number(m.count))
     monitor.setTextColor(colors.white)
-    monitor.write("/ " .. format_number( m.limit))
+    monitor.write(" / " .. format_number( m.limit))
 end
 
 local function draw_drill()
@@ -179,15 +179,14 @@ end
 
 local function draw_timer()
     if current_page ~= page_overview then return end
-    local str_time = format_time(cycle_timer)
 
     -- Timer
-    monitor.setCursorPos(screen_w/2 - #("Timer: " .. str_time), plate_y + 3)
+    monitor.setCursorPos(math.floor(screen_w/2 - 6), plate_y + 3)
     monitor.setBackgroundColor(colors.black)
     monitor.setTextColor(colors.white)
     monitor.write("Timer: ")
     monitor.setTextColor(colors.lime)
-    monitor.write(str_time)
+    monitor.write(format_time(cycle_timer))
 end
 
 local function button(x, label, bg, fg)
