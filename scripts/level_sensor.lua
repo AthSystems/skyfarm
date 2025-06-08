@@ -50,8 +50,9 @@ local function listening()
 
         -- Module update handling
         elseif protocol == config.protocols.share and msg == config.keywords.update then
-            sleep(10)
+            logging.trace("Updating shared files.")
             shell.run("fetch_modules.lua")
+            network.send(config.ids.server,config.keywords.update)
         end
     end
 end

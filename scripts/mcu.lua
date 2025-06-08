@@ -173,8 +173,8 @@ local function listening()
 
         elseif proto == protocols.share and msg == kw.update then
             logging.trace("Updating shared files.")
-            sleep(10)
             shell.run("fetch_modules.lua")
+            network.send(config.ids.server,config.keywords.update)
 
         elseif proto == protocols.status and msg == kw.ping then
             rednet.send(sender, config.keywords.pong, config.protocols.reply)

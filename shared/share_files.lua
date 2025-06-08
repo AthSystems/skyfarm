@@ -4,6 +4,8 @@
 --- DateTime: 7/06/2025 4:44 pm
 ---
 
+local args = {...}
+
 -- === Shared Module Server ===
 local modem = peripheral.find("modem") or error("No modem found")
 rednet.open(peripheral.getName(modem))
@@ -37,9 +39,16 @@ local config = require("config")
 local logging = require("logging")
 local network = require("network")
 
-for _, id in ipairs(config.ids) do
-    network.send(id, config.keywords.update, config.protocols.share)
+
+local startup = false
+if args and args[1] == "true" then
+    startup = true
+    for _, id in ipairs(config.ids) do
+        network.sendAndWait(id, config.keywords.update, config.keywords.update, 5, config.protocols.share)
+    end
 end
+
+
 
 print("[V] Module server ready. Listening on protocol 'sky-share'.")
 while true do
